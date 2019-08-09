@@ -1,39 +1,42 @@
-const express = require('express');
-const router = express.Router();
+const Router = require('express-promise-router');
+const db = require('../db');
 
-const notices = [
-  {
-    id: "001",
-    title: "First Test Notice",
-    content: "Here is some content",
-    postedTime: new Date("2019-08-01 11:37:03Z")
-  },
-  {
-    id: "002",
-    title: "Second Test Notice",
-    content: "Here is some other content",
-    postedTime: new Date("2019-08-01 16:21:42Z")
-  },
-  {
-    id: "003",
-    title: "Third Test Notice",
-    content: "Pat posted this message!",
-    postedTime: new Date("2019-08-01 09:48:53Z")
-  },
-];
+// create a new express-promise-router
+// this has the same API as the normal express router except
+// it allows you to use async functions as route handlers
+const router = new Router()
 
-/* GET notices listing. */
-router.get('/', function(req, res, next) {
-  res.json(notices);
+function toNotice(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    content: row.content,
+    postedTime: row.created_at
+  };
+}
+
+router.get('/', async (req, res) => {
+  const { rows } = await db.query('SELECT id, title, content, created_at FROM notices');
+  res.json(rows.map(toNotice));
 });
 
-/* GET specifc notice. */
-router.get('/:id', function(req, res, next) {
-  const notice = notices.filter(notice => notice.id === req.params.id);
-  if (0 === notice.length) {
+router.get('/:id', async (req, res) => {
+  const { rows } = await db.query('SELECT id, title, content, created_at FROM notices WHERE id = $1', [req.params.id]);
+  if (0 === rows.length) {
     res.status(404).send(`Notice "${req.params.id}" not found.`);
   }
-  res.json(notice[0]);
+  else {
+    res.json(toNotice(rows[0]));
+  }
+});
+
+router.post('/', async (req, res) => {
+  const { rows } = await db.query(`
+INSERT INTO notices (title, content, created_at)
+VALUES ($1, $2, $3)
+RETURNING id`
+  , [req.body.title, req.body.content, new Date()]);
+  res.json(rows[0].id);
 });
 
 module.exports = router;
