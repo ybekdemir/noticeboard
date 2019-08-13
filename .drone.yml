@@ -1,0 +1,19 @@
+pipeline:
+
+  # This step pushes your image to the registry. You can use the default Walhall registry or change the credentials in Drone (drone.walhall.io) to use your own Docker registry,
+  build-docker-image-tag:
+    image: plugins/docker
+    registry:
+      from_secret: DOCKER_REGISTRY # The hostname of your registry, i.e., registry.example.com
+    repo:
+      from_secret: DOCKER_REPO  # This is the complete name of your image: <DOCKER_REGISTRY>/<your organization name>/<your image name>. A valid name will be: registry.example.com/humanitec/some_name_service. It's important to comply with the Docker image restrictions. For more information read: https://docs.docker.com/engine/reference/commandline/tag/#extended-description
+    username:
+      from_secret: DOCKER_USERNAME # Your registry username
+    password:
+      from_secret: DOCKER_PASSWORD # Your registry password
+    auto_tag: true
+    insecure: true
+    file: Dockerfile
+    when:
+      event: [push, tag]
+      status: [success]
