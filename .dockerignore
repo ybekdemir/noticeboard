@@ -1,0 +1,6 @@
+# Client files are copied to the server directory during build, so client can be completely ignored
+client/node_modules
+client/build
+server/node_modules
+server/public
+server/npm-debug.log
