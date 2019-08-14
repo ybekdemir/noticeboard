@@ -29,5 +29,5 @@ RUN npm install
 COPY server/ ./
 COPY --from=build /app/build/ /usr/src/app/public/
 
-EXPOSE 3001
+EXPOSE 8080
 CMD [ "node", "./bin/www" ]
