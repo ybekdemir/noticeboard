@@ -10,10 +10,11 @@ services:
     depends_on:
       - noticeboarddb
     environment:
-      PGHOST: noticeboarddb
-      PGDATABASE: notices
-      PGUSER: notices_robot
-      PGPASSWORD: "n0t!c3s"
+      DATABASE_HOST: noticeboarddb
+      DATABASE_NAME: notices
+      DATABASE_USER: notices_robot
+      DATABASE_PASSWORD: "n0t!c3s"
+      REDISHOST: noticeboardredis
 
   noticeboarddb:
     build:
@@ -27,3 +28,8 @@ services:
 
     environment:
       POSTGRES_PASSWORD: pgsqlDev01
+
+  noticeboardredis:
+    image: redis
+    expose:
+      - 6379

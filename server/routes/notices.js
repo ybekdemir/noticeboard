@@ -1,5 +1,6 @@
 const Router = require('express-promise-router');
 const db = require('../db');
+const stats = require('../stats');
 
 // create a new express-promise-router
 // this has the same API as the normal express router except
@@ -36,6 +37,9 @@ INSERT INTO notices (title, content, created_at)
 VALUES ($1, $2, $3)
 RETURNING id`
   , [req.body.title, req.body.content, new Date()]);
+
+  await stats.increment('numcharacters', req.body.content.length);
+
   res.json(rows[0].id);
 });
 

@@ -17,4 +17,18 @@ export class Notices {
       throw new Error("Unable to fetch Notice");
     });
   }
+  createNotice(title, content) {
+    return fetch(noticesBase, {
+      method: "POST",
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({title, content}),
+    }).then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error("Unable to create Notice");
+    });
+  }
 }
